@@ -31,6 +31,9 @@
                 <li ng-if="verifWishList() == false">
                   <span class="title">Cliquez sur les <button class="btn-floating btn-large waves-effect waves-light pink material-icons" type="button" name="like">stars</button> pour ajouter au panier !</span>
                 </li>
+                <li ng-if="verifWishList() == true">
+                  <button class="btn-floating btn-large btn-notif waves-effect waves-light red material-icons" type="button" name="suppression" ng-click="deleteWishList()">delete_sweep</button>
+                </li>
               </ul>
             </li>
             <li><input type="search" ng-model="selectedSearch" ng-trim="true" placeholder="Rechercher quelqu'un"></li>
@@ -128,9 +131,14 @@
                     {{ user.age }} ans
                   </p>
                   <i class="large material-icons swing animated infinite" ng-show="anniv(user.dob)">access_time</i>
-                  <button class="btn-floating btn-large btn-delete waves-effect waves-light red material-icons" type="button" name="suppression" ng-click="removeUser(user)">delete_forever</button>
-                  <button class="btn-floating btn-large btn-like waves-effect waves-light pink" type="button" name="like" ng-click="likeUser(user)">
-                    <span class="material-icons" >favorite_border</span>
+                  <button class="btn-floating btn-large btn-option waves-effect waves-light red material-icons" type="button" name="suppression" ng-click="removeUser(user)">delete_forever</button>
+                  <button class="btn-floating btn-large btn-option waves-effect waves-light pink" type="button" name="like" ng-click="likeUser(user)">
+                    <span class="material-icons" ng-if="coeurUser(user)===true">favorite</span>
+                    <span class="material-icons" ng-if="coeurUser(user)===false">favorite_border</span>
+                  </button>
+                  <button class="btn-floating btn-large btn-option waves-effect waves-light indigo" type="button" name="plusUn" ng-click="addPlusUn(user)">
+                    <span ng-if="possedePlusUn(user)===true">+ {{ qttPlusUn(user) }}</span>
+                    <span class="material-icons " ng-if="possedePlusUn(user)===false">add</span>
                   </button>
                   <div class="clear"></div>
                 </div>

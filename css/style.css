@@ -111,15 +111,15 @@ nav ul li {
   float: left;
 }
 
-.btn-delete {
+.btn-option {
   float: right;
-  right: -180px;
+  right: -187px;
 }
 
-.btn-like {
-  float: right;
-  right: -170px;
-
+.btn-notif {
+  float: left;
+  top: 7px;
+  left: 23px;
 }
 
 .card-content label {

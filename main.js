@@ -77,38 +77,41 @@ var myCarnetApp = angular.module('myCarnetApp', []);
   // Tri par tranche d'age
   myCarnetApp.filter('triAge', function(){
     return function(tab, tranches){
-
+      // Si toutes les tranhes sont false (=décoché) alors on retourne le tab
       if (_.every(tranches, function(num) { return num === false;})) {
         return tab;
       }
 
       var tabFilter =  [];
+      // si la tranche 1 est vrai (coché), on retourne un tab filtré avec l'age entre 10-18
+      if(tranches[0] === true){
+        tabFilter.push(_.filter(tab, function(elt){
+          return elt.age >= 10 && elt.age < 18;
+        }));
+      }
+      // si la tranche 2 est vrai (coché), on retourne un tab filtré avec l'age entre 18-30
+      if(tranches[1] === true){
+        tabFilter.push(_.filter(tab, function(elt){
+          return elt.age >= 18 && elt.age < 30;
+        }));
+      }
+      // si la tranche 3 est vrai (coché), on retourne un tab filtré avec l'age entre 30-45
+      if(tranches[2] === true){
+        tabFilter.push(_.filter(tab, function(elt){
+          return elt.age >= 30 && elt.age <= 45;
+        }));
+      }
+      // si la tranche 4 est vrai (coché), on retourne un tab filtré avec l'age +45
+      if(tranches[3] === true){
+        tabFilter.push(_.filter(tab, function(elt){
+          return elt.age > 45;
+        }));
+      }
+      //tabFilter est un tableau de tableau d'objet. concat va permettre de retourné un tableau d'objet.
+      tabFilter = [].concat.apply([], tabFilter);
 
-          if(tranches[0] === true){
-            tabFilter.push(_.filter(tab, function(elt){
-              return elt.age >= 10 && elt.age < 18;
-            }));
-          }
-          if(tranches[1] === true){
-            tabFilter.push(_.filter(tab, function(elt){
-              return elt.age >= 18 && elt.age < 30;
-            }));
-          }
-          if(tranches[2] === true){
-            tabFilter.push(_.filter(tab, function(elt){
-              return elt.age >= 30 && elt.age <= 45;
-            }));
-          }
-          if(tranches[3] === true){
-            tabFilter.push(_.filter(tab, function(elt){
-              return elt.age > 45;
-            }));
-          }
-
-        tabFilter = [].concat.apply([], tabFilter);
-
-        return tabFilter;
-      };
+      return tabFilter;
+    };
   });
 
   // Tri les langues et affiche un drapeau à la place
@@ -130,6 +133,7 @@ var myCarnetApp = angular.module('myCarnetApp', []);
   // Tri majeur / mineur en fonction du switch
   myCarnetApp.filter('triSwitch', function(){
     return function(tab, switchPosition) {
+      // le switch est une checkbox. Au chargement de la page undefined (retourne tab) puis cliqué vrai (age>=18) ou faux (age<18)
       if (switchPosition === true) {
         return _.filter(tab, function(user){
           return user.age >= 18;
@@ -149,6 +153,7 @@ var myCarnetApp = angular.module('myCarnetApp', []);
   // Tri par bar de recherche utilisateur
   myCarnetApp.filter('triSearchBar', function(){
     return function(tab, string) {
+      //Si la barre de recherche est vide ou non definie, retourne tout le tab.
       if (string === '' || string === undefined) {
         return tab;
       }
@@ -157,6 +162,7 @@ var myCarnetApp = angular.module('myCarnetApp', []);
           var str = user.nom.toLowerCase() + ' ' + user.prenom.toLowerCase();
           var strInverse = user.prenom.toLowerCase() + ' ' + user.nom.toLowerCase();
           var recherche = string.toLowerCase();
+          // Retourne l'utilisateur incluant ce qui est dans la barre de recherche par rapport à un "nom prénom" ou un "prénom nom",
           if (str.includes(recherche) || strInverse.includes(recherche)) {
             return user;
           }
@@ -244,7 +250,7 @@ var myCarnetApp = angular.module('myCarnetApp', []);
     var idUser = object.id;
     if (sessionStorage.getItem("wishList") !== null) {
       var liste = JSON.parse(sessionStorage.getItem("wishList"));
-      for (var user of liste) {
+      for (user of liste) {
         if (user.id == idUser) {
           liste.splice(liste.indexOf(user),1);
         }
@@ -393,7 +399,7 @@ var myCarnetApp = angular.module('myCarnetApp', []);
       liste = JSON.parse(sessionStorage.getItem("wishList"));
     }
 
-    for (var user of liste) {
+    for (user of liste) {
 
       if (userSimple.id == user.id) {
         liste.splice(liste.indexOf(user),1);
@@ -411,12 +417,27 @@ var myCarnetApp = angular.module('myCarnetApp', []);
     sessionStorage.setItem("wishList",JSON.stringify(liste));
   };
 
+  $scope.coeurUser = function(object) {
+    var tab = [];
+    var liste = JSON.parse(sessionStorage.getItem("wishList"));
+    var userId = object.id;
+    if (liste === null || liste.length === tab.length) {
+      return false;
+    }
+    else {
+
+      for (user of liste) {
+        if (userId == user.id) {
+          return true;
+        }
+      }
+      return false;
+    }
+  };
 
 // + Créer une petite liste des utilisteurs mise en mémoire restituer dès le chargement des elements par la session du naviguateur (whishliste)
   $scope.actualiseWishList = function() {
-    if (sessionStorage.getItem("wishList") !== null) {
       $scope.master = JSON.parse(sessionStorage.getItem("wishList"));
-    }
   };
 
   $scope.verifWishList = function() {
@@ -430,15 +451,177 @@ var myCarnetApp = angular.module('myCarnetApp', []);
     }
   };
 
-// + Créer un bouton "+1" qui permet d'ajouter un "+1" à un utilisateur et l'état du bouton change à un icon "check"
+// + Créer un bouton "+1" qui permet d'ajouter un "+1" à un utilisateur
+  $scope.addPlusUn = function(object) {
+
+    var liste = [];
+    var drapeau = false;
+    if (sessionStorage.getItem("plusUn") !== null) {
+      liste = JSON.parse(sessionStorage.getItem("plusUn"));
+    }
+
+    for (user of liste) {
+      if (object.id === user.id) {
+        user.plus += 1;
+        drapeau = true;
+      }
+    }
+
+    if (drapeau !== true) {
+      liste.push({id: object.id, plus: 1,});
+    }
+
+    sessionStorage.setItem("plusUn",JSON.stringify(liste));
+  };
+
+  $scope.possedePlusUn = function(object) {
+    var tab = [];
+    var liste = JSON.parse(sessionStorage.getItem("plusUn"));
+    var userId = object.id;
+    if (liste === null || liste.length === tab.length) {
+      return false;
+    }
+    else {
+      for (user of liste) {
+        if (userId == user.id) {
+          return true;
+        }
+      }
+      return false;
+    }
+  };
+
+  $scope.qttPlusUn = function(object) {
+
+    var liste = JSON.parse(sessionStorage.getItem("plusUn"));
+    var userId = object.id;
+
+    for (user of liste) {
+      if (userId == user.id) {
+        return user.plus;
+      }
+    }
+  };
+
+  /**
+  * Carnet D'Adresse Partie 3 (Maitrise de Module Installer et Environement)
+  **/
+
+
+/**
+  + Créer un bouton permettant de vider le panier des favoris des utilisateurs
+  + Créer un bouton dans le panier permettant de supprimer un item du panier des favoris
+  + Affiher le nombre d'element dans le panier
+  + Créer une liste déroulante qui permettra d'afficher 5 / 10 / 15 / 20 utilisateurs
+  + Initialiser une note à 0 pour tous les utilisateurs
+  + Installer ng-stats pour mesurer les stats de watchers dans votre application https://github.com/kentcdodds/ng-stats
+  + AJout d'un module avec Bower: Ajouter à l'application le module Angular Load bar disponible ici http://chieffancypants.github.io/angular-loading-bar/
+  + Ajout d'un module avec Bower: Ajouter à lapplication des animations de transitions sur els card avec angular-animate https://docs.angularjs.org/api/ngAnimate
+  + Ajout d'un module sous angular: Ajouter la possibilité de noter de 0 à 5 les utilisateurs avec le module Angular Input Star disponible sous bower ici https://github.com/melloc01/angular-input-stars
+  + Ajouter 5 commentaires par utilisateurs avec pour chaque commentaires le contenu,la note(sur 5) et la date
+  + Afficher le nb. de commentaires sur notre liste d'utilisateurs et un bouton "Voir les commentaires"  où quand je clique sur ce bouton, nous affichons une modal qui affiche les commentaires de cet tilisateur
+  + Créer un nouvelle page petrmettant de visualiser le détail d'un utilisateur quand je clique sur sa loupe.
+  Pour cela, je vous conseille de regarder ce liens vers le systeme de route et parametres dans la route http://www.tutoriel-angularjs.fr/tutoriel/2-utilisation-complete-d-angularjs/1-le-routage
+  + Créer une nouvelle page permettant de visualiser des commentaires de la série GOT derriere l'URL https://jsonplaceholder.typicode.com/comments
+  + Bonus: Créer une formulaire perettant l'ajout des commentaires en POST ($http.post) derriere l'url https://jsonplaceholder.typicode.com/comments
+  + Bonus 2: Permettre à l'utilisateur de de supprimer un commentaire
+*/
+
+// + Créer un bouton permettant de vider le panier des favoris des utilisateurs
+  $scope.deleteWishList = function() {
+    sessionStorage.removeItem("wishList");
+  };
+
+// + Créer un bouton dans le panier permettant de supprimer un item du panier des favoris
 
 
 
 
 
 
+// + Affiher le nombre d'element dans le panier
 
-// + Avec bower récupérer ngCookie pour créer des cookies et stocker les "+1" des utilisatreurs selon leur id
+
+
+
+
+
+// + Créer une liste déroulante qui permettra d'afficher 5 / 10 / 15 / 20 utilisateurs
+
+
+
+
+
+// + Initialiser une note à 0 pour tous les utilisateurs
+
+
+
+
+
+// + Installer ng-stats pour mesurer les stats de watchers dans votre application https://github.com/kentcdodds/ng-stats
+
+
+
+
+
+
+// + AJout d'un module avec Bower: Ajouter à l'application le module Angular Load bar disponible ici http://chieffancypants.github.io/angular-loading-bar/
+
+
+
+
+
+// + Ajout d'un module avec Bower: Ajouter à lapplication des animations de transitions sur els card avec angular-animate https://docs.angularjs.org/api/ngAnimate
+
+
+
+
+
+// + Ajout d'un module sous angular: Ajouter la possibilité de noter de 0 à 5 les utilisateurs avec le module Angular Input Star disponible sous bower ici https://github.com/melloc01/angular-input-stars
+
+
+
+
+
+
+// + Ajouter 5 commentaires par utilisateurs avec pour chaque commentaires le contenu,la note(sur 5) et la date
+
+
+
+
+
+// + Afficher le nb. de commentaires sur notre liste d'utilisateurs et un bouton "Voir les commentaires"  où quand je clique sur ce bouton, nous affichons une modal qui affiche les commentaires de cet tilisateur
+
+
+
+
+
+// + Créer un nouvelle page petrmettant de visualiser le détail d'un utilisateur quand je clique sur sa loupe.
+
+
+
+
+
+
+// Pour cela, je vous conseille de regarder ce liens vers le systeme de route et parametres dans la route http://www.tutoriel-angularjs.fr/tutoriel/2-utilisation-complete-d-angularjs/1-le-routage
+
+
+
+
+
+// + Créer une nouvelle page permettant de visualiser des commentaires de la série GOT derriere l'URL https://jsonplaceholder.typicode.com/comments
+
+
+
+
+
+// + Bonus: Créer une formulaire perettant l'ajout des commentaires en POST ($http.post) derriere l'url https://jsonplaceholder.typicode.com/comments
+
+
+
+
+// + Bonus 2: Permettre à l'utilisateur de de supprimer un commentaire
+
 
 // Fin du controller carnetCtrl de myCarnetApp
 }]);
