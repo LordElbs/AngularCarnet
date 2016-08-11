@@ -24,7 +24,7 @@
 /**
  * Déclaration de l'application MyCarnetApp
  */
-var myCarnetApp = angular.module('myCarnetApp', []);
+var myCarnetApp = angular.module('myCarnetApp', ['angular-loading-bar', 'angular-input-stars']);
 
   // Tri par date de naissance
   myCarnetApp.filter('triDateNaissance', function() {
@@ -190,18 +190,19 @@ var myCarnetApp = angular.module('myCarnetApp', []);
 
   $scope.selectedAge = [false, false, false, false];
 
-  // + Créer un tableau de 8 utilisateurs avec nom, prénom, age,photo,  date de naissances(dd/mm/YYYY),noteBac (de 1 à 20), sexe(boolean), ville (Paris ou Lyon ou Marseille), biographie, langue(fr,en,it ou es),
+// + Créer un tableau de 8 utilisateurs avec nom, prénom, age,photo,  date de naissances(dd/mm/YYYY),noteBac (de 1 à 20), sexe(boolean), ville (Paris ou Lyon ou Marseille), biographie, langue(fr,en,it ou es),
 
   // requette HTTP en GET (via l'url)
   // pour récupérer mon tableau en JSON format
   // 57ab4069e4b0dc55a4ebdcec est l'identifiant de sauvegarde
-  $http.get('https://jsonblob.com/api/57ab4069e4b0dc55a4ebdcec').success(function(response) {
+  $http.get('https://jsonblob.com/api/57ac716ae4b0dc55a4ec254f').success(function(response) {
     $scope.users = users = response;
   });
 
   // Tableau pour les ID (de base = nombre utilisateur)
   var tabId = [0,1,2,3,4,5,6,7,];
-  // + Afficher le nombre d'utilisateur ainsi que la moyenne d'age des utilisateurs
+
+// + Afficher le nombre d'utilisateur ainsi que la moyenne d'age des utilisateurs
   $scope.nbUser = function() {
     return  $scope.users.length;
   };
@@ -215,6 +216,7 @@ var myCarnetApp = angular.module('myCarnetApp', []);
     var triSearchBarFilter = $filter('triSearchBar');
     var triDepartementFilter = $filter('triDepartement');
     var triAgeFilter = $filter('triAge');
+    var triLimitToFilter = $filter('limitTo');
 
 
     var naissanceFilter = triDateNaissanceFilter($scope.users,$scope.selectedDate);
@@ -223,7 +225,8 @@ var myCarnetApp = angular.module('myCarnetApp', []);
     var switchFilter = triSwitchFilter(villeFilter, $scope.selectedSwitch);
     var searchFilter = triSearchBarFilter(switchFilter, $scope.selectedSearch);
     var departementFilter = triDepartementFilter(searchFilter, $scope.selectedDepartement);
-    var ageFilter = triAgeFilter(departementFilter, $scope.selectedAge);
+    var limitToFilter = triLimitToFilter(departementFilter,$scope.selectedQttAffiche);
+    var ageFilter = triAgeFilter(limitToFilter, $scope.selectedAge);
 
     if(ageFilter !== undefined){
       return _.reduce(ageFilter, function(memo, num){
@@ -232,15 +235,15 @@ var myCarnetApp = angular.module('myCarnetApp', []);
     }
   };
 
-  // + Afficher à coté du nombre utilisateurs le mot "utilisateurs" avec un "s" ou pas selon le nombre d'utilisateur avec la directive "ng-show"
+// + Afficher à coté du nombre utilisateurs le mot "utilisateurs" avec un "s" ou pas selon le nombre d'utilisateur avec la directive "ng-show"
   // Voir dans le html le ng-show
 
-  // + Afficher le mots "Il n'y a que des mineurs" si l'age de tous les utilisateurs est inférieur à 18 ans avec la directive "ng-show" ou "ng-if"
+// + Afficher le mots "Il n'y a que des mineurs" si l'age de tous les utilisateurs est inférieur à 18 ans avec la directive "ng-show" ou "ng-if"
   $scope.mineur = function() {
     return _.every($scope.users, function(num) { return num.age < 18;});
   };
 
-  // + Créer un bouton "remove" à chaque utilisateur permettant au click de supprimer l'utilisateur
+// + Créer un bouton "remove" à chaque utilisateur permettant au click de supprimer l'utilisateur
   $scope.removeUser = function(object) {
 
     var indexUser = $scope.users.indexOf(object);
@@ -261,22 +264,22 @@ var myCarnetApp = angular.module('myCarnetApp', []);
 
     Materialize.toast(object.prenom + ' ' + ' définitivement supprimé !', 2000, 'rounded');
   };
-  // + Si il n'y a plus aucuns utilisateurs, afficher "Plus aucun utilisateurs" et cacher la moyenne d'age
+// + Si il n'y a plus aucuns utilisateurs, afficher "Plus aucun utilisateurs" et cacher la moyenne d'age
   // Voir dans le HTML les ng-hide et ng-show lié à la taille du tableau users.length
 
-  // + Créer des boutons radios Lyon, Paris, Marseille pour filtrer les utilisateur au click de ces bouttons radios
+// + Créer des boutons radios Lyon, Paris, Marseille pour filtrer les utilisateur au click de ces bouttons radios
   // Voir dans le HTML le <li class="collection-item avatar" ng-repeat="user in users | filter:selectedVille"> utilisant filter:selectedVille associé aux boutons radios ayant ng-model="selectedVille" ainsi qu'une value d'attribué
 
-  // + Créer des checkbox de tranches d'age permettant de filtrer par age les utilisateurs incluant les tranches de prix suivantes: -10, 10-18, 18-30 , 30-45 , + de 45
-  //  Bonus: Les checkbox de tranches d'age prendra en compte le 1ere filtre sur lesboutons radios
+// + Créer des checkbox de tranches d'age permettant de filtrer par age les utilisateurs incluant les tranches de prix suivantes: -10, 10-18, 18-30 , 30-45 , + de 45
+  // Voir le filtre triant les tranches d'âge
 
-  // + Créer un Datepicker pour filtrer par date de naissances les utilisateurs à partir de cette date : avec Materializecss http://materializecss.com/forms.html#date-picker
+// + Créer un Datepicker pour filtrer par date de naissances les utilisateurs à partir de cette date : avec Materializecss http://materializecss.com/forms.html#date-picker
   // Voir le filtre triDateNaissance
 
-  // + Créer un input range pour filtrer selon la note au bac de 1 à 20 avec Materialize http://materializecss.com/forms.html#range
+// + Créer un input range pour filtrer selon la note au bac de 1 à 20 avec Materialize http://materializecss.com/forms.html#range
   // Voir le filtre triNoteBac ci-dessus
 
-  // + Créer un formulaire d'ajout d'utilisateurs avec l'ensemble de ces données (on fera la validation plus tard, vous piuvez prendre de l'avance et voir comment on valide un formulaire sous ANgular ici https://openclassrooms.com/courses/validation-de-formulaire-simplifiee-avec-angularjs)
+// + Créer un formulaire d'ajout d'utilisateurs avec l'ensemble de ces données (on fera la validation plus tard, vous piuvez prendre de l'avance et voir comment on valide un formulaire sous ANgular ici https://openclassrooms.com/courses/validation-de-formulaire-simplifiee-avec-angularjs)
   $scope.addUser = function() {
     tabId.push(tabId.length);
     var type = function() {
@@ -299,6 +302,7 @@ var myCarnetApp = angular.module('myCarnetApp', []);
       biographie: $scope.addBiography,
       langue: $scope.addLangue,
       cp: $scope.addDptm,
+      note: 0,
     });
 
     if (type) {
@@ -313,8 +317,8 @@ var myCarnetApp = angular.module('myCarnetApp', []);
 
   };
 
-  // + Bonus: Externaliser les users dans un fichier json et chargé ce fichier en AJAX à l'aide de l'opérateur $http
-
+// + Bonus: Externaliser les users dans un fichier json et chargé ce fichier en AJAX à l'aide de l'opérateur $http
+  // Voir l'appel du tableau au départ lors de sa "création"
 
   /**
   *  Application "Carnet d'Adresses" Partie 2
@@ -341,25 +345,25 @@ var myCarnetApp = angular.module('myCarnetApp', []);
 */
 
 // + Cacher les cards des users quand il y en a pas et y mettre un petite message en rouge: Aucun utilisateurs trouvé :( (attention aux filtres!!)
-// voir directement dans le HTML ng-hide et ng-show avec le message : error 404: users not found
+  // voir directement dans le HTML ng-hide et ng-show avec le message : error 404: users not found
 
 // + Ajouter 1 classe css "warning" si l'utilisateur n'a pas eu la moyenne au bac: Directive "ng-class"
-// Voir dans le HTML l'attribut nng-class="{'warning' : {{user.noteBac}}<10}" entourant la note de l'utilisateur
+  // Voir dans le HTML l'attribut nng-class="{'warning' : {{user.noteBac}}<10}" entourant la note de l'utilisateur
 
 // + Créer un filtre qui selon la langue affiche le drapeau du pays pour chaque utilisateurs
-//Voir le filtre triLangue tout en haut ainsi que l'image dans le HTML <img src="{{ user.langue | triLangue }}" class="imgLangue"/>
+  //Voir le filtre triLangue tout en haut ainsi que l'image dans le HTML <img src="{{ user.langue | triLangue }}" class="imgLangue"/>
 
 // + Créer un bouton Switch permettant de filtrer les utilisateurs majeurs ou les utilisateurs mineurs
-// Voir le filtre triSwitch ainsi que le ng-model="selectedSwitch" dans le HTML
+  // Voir le filtre triSwitch ainsi que le ng-model="selectedSwitch" dans le HTML
 
 // + Créer un moteur de recherche instantanée de recherche de d'utilisateurs sur le nom et le prénom
-// Voir le filtre triSearchBar ainsi que le ng-model'selectedSearch" dans le HTML
+  // Voir le filtre triSearchBar ainsi que le ng-model'selectedSearch" dans le HTML
 
 // + Ajouter aux utilisateurs le code postal
-// Rajouté dans le tableau des users.
+  // Rajouté dans le tableau des users.
 
 // + Ajouter un champ département permettant de filtrer les utilisateurs par départements
-// Voir le filtre triDepartement ainsi que le ng-model'selectedDepartement" dans le HTML
+  // Voir le filtre triDepartement ainsi que le ng-model'selectedDepartement" dans le HTML
 
 
 // + AJouter un icon "access_time" a coté de chaque utilisateur si ce mois courant est le mois d'anniversaire de l'utilisateur <i class="material-icons">access_time</i> (utiliser moment)
@@ -374,13 +378,13 @@ var myCarnetApp = angular.module('myCarnetApp', []);
  // Voir dans HTML <i class="large material-icons swing animated" ng-show="anniv(user.dob)">access_time</i>
 
 // + Créer une liste déroulante me permettant de trier par nom, par prénom, par age, par note au bac ou par ville
-// Voir dans HTML ng-model sur le select ainsi que le orderBy:selectedDeroulante
+  // Voir dans HTML ng-model sur le select ainsi que le orderBy:selectedDeroulante
 
 // + Créer une notification (Toast) quand un utilisateurs se crée http://materializecss.com/dialogs.html#toast
-// Voir dans la fonction addUSer ci-dessus Materialize.toast('I am a toast!', 4000, 'rounded');
+  // Voir dans la fonction addUSer ci-dessus Materialize.toast('I am a toast!', 4000, 'rounded');
 
 // + Ajouter des id "1", "2" , "3" etc... à chaque utilisateurs.
-// Voir id dans le tableau et dans la fonction ajout d'utilisateur
+  // Voir id dans le tableau et dans la fonction ajout d'utilisateur
 
 // + Créer un bouton "like" sur chacun utilisateur qui permet de le mémoriser avec la session locale du navigateur sessionStorage par leur id http://www.alsacreations.com/article/lire/1402-web-storage-localstorage-sessionstorage.html
   $scope.likeUser = function(object) {
@@ -518,6 +522,7 @@ var myCarnetApp = angular.module('myCarnetApp', []);
   + AJout d'un module avec Bower: Ajouter à l'application le module Angular Load bar disponible ici http://chieffancypants.github.io/angular-loading-bar/
   + Ajout d'un module avec Bower: Ajouter à lapplication des animations de transitions sur els card avec angular-animate https://docs.angularjs.org/api/ngAnimate
   + Ajout d'un module sous angular: Ajouter la possibilité de noter de 0 à 5 les utilisateurs avec le module Angular Input Star disponible sous bower ici https://github.com/melloc01/angular-input-stars
+  + Bonus: AJout de module : paginer les utilisateurs avec le module  Paging http://brantwills.github.io/Angular-Paging/
   + Ajouter 5 commentaires par utilisateurs avec pour chaque commentaires le contenu,la note(sur 5) et la date
   + Afficher le nb. de commentaires sur notre liste d'utilisateurs et un bouton "Voir les commentaires"  où quand je clique sur ce bouton, nous affichons une modal qui affiche les commentaires de cet tilisateur
   + Créer un nouvelle page petrmettant de visualiser le détail d'un utilisateur quand je clique sur sa loupe.
@@ -531,56 +536,38 @@ var myCarnetApp = angular.module('myCarnetApp', []);
   $scope.deleteWishList = function() {
     sessionStorage.removeItem("wishList");
   };
+  // Voir aussi le bouton utilisant ng-click="deleteWishList"
 
 // + Créer un bouton dans le panier permettant de supprimer un item du panier des favoris
-
-
-
-
-
+  // Voir le rajout du bouton dans le HTML: <button class="secondary-content btn-floating btn-large waves-effect waves-light red material-icons" type="button" name="suppression" ng-click="likeUser(user)">delete</button>
 
 // + Affiher le nombre d'element dans le panier
-
-
-
-
-
+  $scope.nombreDansPanier = function() {
+    var liste = JSON.parse(sessionStorage.getItem("wishList"));
+    return liste.length;
+  };
 
 // + Créer une liste déroulante qui permettra d'afficher 5 / 10 / 15 / 20 utilisateurs
-
-
-
-
+  // Voir dans le HTML le rajout du <select ng-model="selectedQttAffiche"> ainsi que du filtre limitTo:selectedQttAffiche
 
 // + Initialiser une note à 0 pour tous les utilisateurs
-
-
-
-
+  //Rajouter dans le tableau JSON et dans l'ajout d'un user.
 
 // + Installer ng-stats pour mesurer les stats de watchers dans votre application https://github.com/kentcdodds/ng-stats
-
-
-
-
-
+  // javascript: (function() {var a = document.createElement("script");a.src = "https://rawgit.com/kentcdodds/ng-stats/master/dist/ng-stats.js";a.onload=function(){window.showAngularStats()};document.head.appendChild(a)})();
 
 // + AJout d'un module avec Bower: Ajouter à l'application le module Angular Load bar disponible ici http://chieffancypants.github.io/angular-loading-bar/
-
-
-
-
+  // Voir https://github.com/chieffancypants/angular-loading-bar
 
 // + Ajout d'un module avec Bower: Ajouter à lapplication des animations de transitions sur els card avec angular-animate https://docs.angularjs.org/api/ngAnimate
-
-
-
-
+  // Je passe
 
 // + Ajout d'un module sous angular: Ajouter la possibilité de noter de 0 à 5 les utilisateurs avec le module Angular Input Star disponible sous bower ici https://github.com/melloc01/angular-input-stars
+  // Voir https://github.com/melloc01/angular-input-stars
 
 
 
+// + Bonus: AJout de module : paginer les utilisateurs avec le module  Paging http://brantwills.github.io/Angular-Paging/
 
 
 

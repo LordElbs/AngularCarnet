@@ -41,6 +41,13 @@ nav ul li {
   width: 14%;
 }
 
+.fixedStat2 {
+  position: fixed;;
+  top: 270px;
+  right: 0;
+  width: 14%;
+}
+
 .dropdown-content {
   min-width: 250px;
 }

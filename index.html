@@ -4,14 +4,20 @@
   <meta charset="utf-8">
   <!-- Stylesheet Animate -->
   <link rel="stylesheet" href="bower_components/animate.css/animate.min.css" media="screen" title="no title" charset="utf-8" />
+  <!-- Stylesheet FontAwesome -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" media="screen" title="no title" charset="utf-8" />
+  <!-- Stylesheet de la barre de chargement -->
+  <link rel="stylesheet" href="bower_components/angular-loading-bar/build/loading-bar.min.css" type="text/css" media="all" />
+  <!-- Stylesheet pour les étoiles -->
+  <link rel="stylesheet" href="bower_components/angular-input-stars-directive/angular-input-stars.css" type="text/css" media="all" />
   <!-- Stylesheet Materialize -->
   <link rel="stylesheet" href="bower_components/materialize/dist/css/materialize.min.css" media="screen" title="no title" charset="utf-8" />
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Roboto:300" rel="stylesheet">
   <!--Import Google Icon Font-->
-  <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
   <!-- My stylesheet -->
-  <link rel="stylesheet" href="css/style.css" media="screen" title="no title" charset="utf-8">
+  <link rel="stylesheet" href="css/style.css" media="screen" title="no title" charset="utf-8" />
   <title>Exo 1 - Angular</title>
 </head>
 <!-- ng-quelquechose est une directive à Angular -->
@@ -24,9 +30,11 @@
             <li>
               <button type="button" class="btn-floating btn-large waves-effect waves-light transparent dropdown-button material-icons" data-activates="dropdown1" ng-click="actualiseWishList()" ng-model="master">shopping_cart</button>
               <ul id="dropdown1" class="collection dropdown-content">
+                <li ng-if="verifWishList() == true"><span class="title">{{ nombreDansPanier() }} favoris dans le panier</span></li>
                 <li class="collection-item avatar" ng-repeat="user in master">
                   <img ng-src="{{user.photo}}" alt="Photo de {{user.prenom}} {{user.nom}}" class="circle">
                   <span class="title">{{user.prenom}} {{user.nom}}</span>
+                  <button class="secondary-content btn-floating btn-large waves-effect waves-light red material-icons" type="button" name="suppression" ng-click="likeUser(user)">delete</button>
                 </li>
                 <li ng-if="verifWishList() == false">
                   <span class="title">Cliquez sur les <button class="btn-floating btn-large waves-effect waves-light pink material-icons" type="button" name="like">stars</button> pour ajouter au panier !</span>
@@ -45,9 +53,21 @@
       <div class="card blue lighten-1 fixedStat">
         <div class="card-content white-text">
           <h5 class="card-title">Statistiques :</h5>
-          <p ng-hide="!(users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement).length">Il y a {{ (users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement).length }} utilisateur<span ng-show="(users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement).length > 1">s</span>, la moyenne d'age est de {{ moyenneAgeUsers()|number:1 }} ans.</p>
-          <p ng-show="!(users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement).length"> Il n'y a pas d'utilisateur</p>
-          <p ng-if="mineur()" ng-hide="!(users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement).length">Il n'y a que des mineurs.</p>
+          <p ng-hide="!(users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement | limitTo: selectedQttAffiche).length">Il y a {{ (users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement | limitTo: selectedQttAffiche).length }} utilisateur<span ng-show="(users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement | limitTo: selectedQttAffiche).length > 1">s</span>, la moyenne d'age est de {{ moyenneAgeUsers() | number:1 }} ans.</p>
+          <p ng-show="!(users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement | limitTo: selectedQttAffiche).length"> Il n'y a pas d'utilisateur</p>
+          <p ng-if="mineur()" ng-hide="!(users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement | limitTo: selectedQttAffiche).length">Il n'y a que des mineurs.</p>
+        </div>
+      </div>
+      <div class="card blue lighten-1 fixedStat2">
+        <div class="card-content">
+          <h5 class="card-title">User / page :</h5>
+          <select ng-model="selectedQttAffiche">
+            <option value="" selected>Tous</option>
+            <option value="2">2</option>
+            <option value="4">4</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+          </select>
         </div>
       </div>
       <div class="container">
@@ -56,7 +76,7 @@
             <div class="card blue lighten-1">
               <div class="card-content">
                 <h5 class="card-title">Rangé par :</h5>
-                <select ng-model="selectedDeroulante"  >
+                <select ng-model="selectedDeroulante">
                   <option value="" disabled selected>Rangé par</option>
                   <option value="nom">Nom</option>
                   <option value="prenom">Prénom</option>
@@ -120,9 +140,9 @@
             </div>
           </div>
           <div class="col s12 m8 l9">
-            <h3 ng-show="!(users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement).length"> Error 404: Users not found</h3>
-            <ul class="collection collapsible"  data-collapsible="accordion" ng-hide="!(users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement).length">
-              <li class="collection-item avatar" ng-repeat="user in users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement | orderBy:selectedDeroulante">
+            <h3 ng-show="!(users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement | limitTo: selectedQttAffiche).length"> Error 404: Users not found</h3>
+            <ul class="collection collapsible"  data-collapsible="accordion" ng-hide="!(users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement | limitTo: selectedQttAffiche).length">
+              <li class="collection-item avatar" ng-repeat="user in users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement | orderBy:selectedDeroulante | limitTo: selectedQttAffiche">
                 <div class="collapsible-header">
                   <img ng-src="{{ user.photo }}" alt="Photo de {{ user.prenom }}" class="circle" />
                   <p>
@@ -140,6 +160,7 @@
                     <span ng-if="possedePlusUn(user)===true">+ {{ qttPlusUn(user) }}</span>
                     <span class="material-icons " ng-if="possedePlusUn(user)===false">add</span>
                   </button>
+                    <input-stars max="5" ng-model="YourCtrl.property"></input-stars>
                   <div class="clear"></div>
                 </div>
                 <div class="collapsible-body">
@@ -226,6 +247,10 @@
   <script type="text/javascript" src="../bower_components/jquery/dist/jquery.min.js" charset="utf-8"></script>
   <!-- Librairie Materialize -->
   <script type="text/javascript" src="../bower_components/materialize/dist/js/materialize.min.js" charset="utf-8"></script>
+  <!-- Librairie pour la barre de chargement -->
+  <script type="text/javascript" src="bower_components/angular-loading-bar/build/loading-bar.min.js"></script>
+  <!-- Librairie pour les étoiles -->
+  <script type="text/javascript" src="bower_components/angular-input-stars-directive/angular-input-stars.js"></script>
   <!-- My first Javascript Document -->
   <script type="text/javascript" src="jquery.js" charset="utf-8"></script>
   <!-- My second Javascript Document -->
