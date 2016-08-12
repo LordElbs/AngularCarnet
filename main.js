@@ -24,7 +24,7 @@
 /**
  * Déclaration de l'application MyCarnetApp
  */
-var myCarnetApp = angular.module('myCarnetApp', ['angular-loading-bar', 'angular-input-stars']);
+var myCarnetApp = angular.module('myCarnetApp', ['angular-loading-bar', 'angular-input-stars','ngroute']);
 
   // Tri par date de naissance
   myCarnetApp.filter('triDateNaissance', function() {
@@ -184,7 +184,7 @@ var myCarnetApp = angular.module('myCarnetApp', ['angular-loading-bar', 'angular
     };
   });
 
-  myCarnetApp.controller('carnetCtrl', ['$scope','$filter', '$http',function($scope, $filter, $http) {
+  myCarnetApp.controller('carnetCtrl', ['$scope','$filter', '$http', function($scope, $filter, $http) {
 
   $scope.title = "Carnet d'adresses";
 
@@ -195,7 +195,7 @@ var myCarnetApp = angular.module('myCarnetApp', ['angular-loading-bar', 'angular
   // requette HTTP en GET (via l'url)
   // pour récupérer mon tableau en JSON format
   // 57ab4069e4b0dc55a4ebdcec est l'identifiant de sauvegarde
-  $http.get('https://jsonblob.com/api/57ac716ae4b0dc55a4ec254f').success(function(response) {
+  $http.get('https://jsonblob.com/api/57ad80bbe4b0dc55a4ec6341').success(function(response) {
     $scope.users = users = response;
   });
 
@@ -572,25 +572,26 @@ var myCarnetApp = angular.module('myCarnetApp', ['angular-loading-bar', 'angular
 
 
 // + Ajouter 5 commentaires par utilisateurs avec pour chaque commentaires le contenu,la note(sur 5) et la date
-
+// Rajouté directement dans le JSON
 
 
 
 
 // + Afficher le nb. de commentaires sur notre liste d'utilisateurs et un bouton "Voir les commentaires"  où quand je clique sur ce bouton, nous affichons une modal qui affiche les commentaires de cet tilisateur
+  // Moyenne des commentaires de l'utilisateur (object)
+  $scope.moyenneCommentaires = function(object) {
 
+      return _.reduce(object.commentaire, function(memo, num){
+        return memo + parseInt(num.etoile);
+      },0) / (object.commentaire.length === 0 ? 1 : object.commentaire.length);
+  };
 
+  $scope.modalTrigger = function (id) {
+    console.log(id, $('#' +  id));
+    $('#modal' + id).openModal();
+   };
 
-
-
-// + Créer un nouvelle page petrmettant de visualiser le détail d'un utilisateur quand je clique sur sa loupe.
-
-
-
-
-
-
-// Pour cela, je vous conseille de regarder ce liens vers le systeme de route et parametres dans la route http://www.tutoriel-angularjs.fr/tutoriel/2-utilisation-complete-d-angularjs/1-le-routage
+// + Créer un nouvelle page permettant de visualiser le détail d'un utilisateur quand je clique sur sa loupe. Pour cela, je vous conseille de regarder ce liens vers le systeme de route et parametres dans la route http://www.tutoriel-angularjs.fr/tutoriel/2-utilisation-complete-d-angularjs/1-le-routage
 
 
 

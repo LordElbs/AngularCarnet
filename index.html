@@ -24,6 +24,8 @@
 <body ng-app="myCarnetApp">
   <!-- Une application peut contenir un ou plusieurs controleur. Un controleur est une zone de controle pour Angular -->
   <div ng-controller="carnetCtrl">
+
+
       <nav class="nav-wrapper">
           <a href="#" class="brand-logo center">Walking Dead Carnet</a>
           <ul id="nav-mobile" class="right hide-on-med-and-down">
@@ -161,7 +163,7 @@
                     <span class="material-icons " ng-if="possedePlusUn(user)===false">add</span>
                   </button>
                     <input-stars max="5" ng-model="YourCtrl.property"></input-stars>
-                  <div class="clear"></div>
+                    <div class="clear"></div>
                 </div>
                 <div class="collapsible-body">
                   <p><span class="caracteristique">Né<span ng-show="user.sexe == false">e</span> le :</span> {{ user.dob }}</p>
@@ -169,6 +171,27 @@
                   <p><span class="caracteristique">Sexe :</span><span ng-if="user.sexe === true"> Homme</span><span ng-if="user.sexe === false"> Femme</span></p>
                   <p>Habite à {{ user.ville }} ({{ user.cp }}) et parle <span ng-if="user.langue == 'fr'">français</span><span ng-if="user.langue == 'en'">anglais</span><span ng-if="user.langue == 'es'">espagnol</span><span ng-if="user.langue == 'it'">italien</span><img ng-src="{{ user.langue | triLangue }}" class="imgLangue"/></p>
                   <p><span class="caracteristique">Biographie :</span><br />{{ user.biographie }}</p>
+                  <p>
+                    <a class="waves-effect waves-light btn modal-trigger" ng-click="modalTrigger(user.id)">Voir les commentaires</a>
+                    <!-- Modal Structure -->
+                    <div id="modal{{user.id}}" class="modal">
+                      <div class="modal-content">
+                        <h4>
+                          Nombre de commentaire : {{user.commentaire.length}}<br />
+                          Moyenne des notes : {{ moyenneCommentaires(user) | number:1  }}
+                        </h4>
+                        <ul class="collection">
+                          <li class="collection-item avatar" ng-repeat="commentaire in user.commentaire">
+                            <span class="title">{{ commentaire.date }}</span>
+                            <p>
+                              {{ commentaire.etoile }}<br />
+                              {{ commentaire.contenu }}
+                            </p>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </p>
                 </div>
               </li>
             </ul>
@@ -251,6 +274,8 @@
   <script type="text/javascript" src="bower_components/angular-loading-bar/build/loading-bar.min.js"></script>
   <!-- Librairie pour les étoiles -->
   <script type="text/javascript" src="bower_components/angular-input-stars-directive/angular-input-stars.js"></script>
+  <!-- Librairie pour ng-route -->
+  <script src="bower_components/angular-route/angular-route.min.js"></script>
   <!-- My first Javascript Document -->
   <script type="text/javascript" src="jquery.js" charset="utf-8"></script>
   <!-- My second Javascript Document -->

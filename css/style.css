@@ -129,6 +129,14 @@ nav ul li {
   left: 23px;
 }
 
+.angular-input-stars {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  display: block;
+  margin-left: 0;
+}
+
 .card-content label {
   color: #fff;
 }
@@ -190,6 +198,10 @@ select {
 
 .btn {
   background: #42a5f5;
+}
+
+.btn:hover, .btn-large:hover {
+  background: #ee6e73;
 }
 
 .clear {
