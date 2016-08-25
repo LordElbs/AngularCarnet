@@ -1,0 +1,189 @@
+
+<!-- Une application peut contenir un ou plusieurs controleur. Un controleur est une zone de controle pour Angular -->
+<div ng-controller="carnetCtrl">
+  <!-- + Afficher à coté du nombre utilisateurs le mot "utilisateurs" avec un "s" ou pas selon le nombre d'utilisateur avec la directive "ng-show" -->
+  <main>
+    <div class="card blue lighten-1 fixedStat">
+      <div class="card-content white-text">
+        <h5 class="card-title">Statistiques :</h5>
+        <p ng-hide="!(users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement | limitTo: selectedQttAffiche).length">Il y a {{ (users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement | limitTo: selectedQttAffiche).length }} utilisateur<span ng-show="(users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement | limitTo: selectedQttAffiche).length > 1">s</span>, la moyenne d'age est de {{ moyenneAgeUsers() | number:1 }} ans.</p>
+        <p ng-show="!(users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement | limitTo: selectedQttAffiche).length"> Il n'y a pas d'utilisateur</p>
+        <p ng-if="mineur()" ng-hide="!(users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement | limitTo: selectedQttAffiche).length">Il n'y a que des mineurs.</p>
+      </div>
+    </div>
+    <div class="card blue lighten-1 fixedStat2">
+      <div class="card-content">
+        <h5 class="card-title">User / page :</h5>
+        <select ng-model="selectedQttAffiche">
+          <option value="" selected>Tous</option>
+          <option value="2">2</option>
+          <option value="4">4</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+        </select>
+      </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col s12 m4 l3">
+          <div class="card blue lighten-1">
+            <div class="card-content">
+              <h5 class="card-title">Rangé par :</h5>
+              <select ng-model="selectedDeroulante">
+                <option value="" disabled selected>Rangé par</option>
+                <option value="nom">Nom</option>
+                <option value="prenom">Prénom</option>
+                <option value="age">Âge</option>
+                <option value="noteBac">Note au bac</option>
+              </select>
+            </div>
+          </div>
+          <div class="card blue lighten-1">
+            <div class="card-content white-text">
+              <h5 class="card-title">Tri par ville :</h5>
+              <input type="radio" name="ville" id="default" ng-model="selectedVille" value=""/> <label for="default">Toutes</label><br />
+              <input type="radio" name="ville" id="lyon" ng-model="selectedVille" value="Lyon"/> <label for="lyon">Lyon</label><br />
+              <input type="radio" name="ville" id="paris" ng-model="selectedVille" value="Paris"/> <label for="paris">Paris</label><br />
+              <input type="radio" name="ville" id="marseille" ng-model="selectedVille" value="Marseille"/> <label for="marseille">Marseille</label>
+            </div>
+          </div>
+          <div class="card blue lighten-1">
+            <div class="card-content white-text">
+              <h5 class="card-title">Tri par age :</h5>
+              <p>
+                <input type="checkbox" name="de10a18" id="de10a18" ng-model="selectedAge[0]" value="de10a18"><label for="de10a18">de 10 à 18 ans</label><br />
+                <input type="checkbox" name="de18a30" id="de18a30" ng-model="selectedAge[1]" value="de18a30"><label for="de18a30">de 18 à 30 ans</label><br />
+                <input type="checkbox" name="de30a45" id="de30a45" ng-model="selectedAge[2]" value="de30a45"><label for="de30a45">de 30 à 45 ans</label><br />
+                <input type="checkbox" name="plus45" id="plus45" ng-model="selectedAge[3]" value="plus45"><label for="plus45">+ de 45 ans</label>
+              </p>
+            </div>
+          </div>
+          <div class="card blue lighten-1">
+            <div class="card-content white-text">
+              <h5 class="card-title">Tri par date de naissance :</h5>
+              <label for="date">Né après le :</label> <input type="date" name="name" id="dateDeNaissance" ng-model="selectedDate"/>
+            </div>
+          </div>
+          <div class="card blue lighten-1">
+            <div class="card-content white-text">
+              <h5 class="card-title">Tri par note de Bac :</h5>
+              <p class="range-field">
+                <input type="range" id="choosenNote" min="0" max="20" ng-model="selectedNote" />
+              </p>
+            </div>
+          </div>
+          <div class="card blue lighten-1">
+            <div class="card-content white-text">
+              <h5 class="card-title">Tri par majorité :</h5>
+              <div class="switch">
+                <label>
+                  Mineur
+                  <input type="checkbox" ng-model="selectedSwitch" />
+                  <span class="lever"></span>
+                  Majeur
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="card blue lighten-1">
+            <div class="card-content white-text">
+              <h5 class="card-title">Tri par département :</h5>
+              <input id="departement" type="text" maxlength ="5" placeholder="Département" ng-model="selectedDepartement" ng-trim="true" />
+            </div>
+          </div>
+        </div>
+        <div class="col s12 m8 l9">
+          <h3 ng-show="!(users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement | limitTo: selectedQttAffiche).length"> Error 404: Users not found</h3>
+          <ul class="collection collapsible"  data-collapsible="accordion" ng-hide="!(users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement | limitTo: selectedQttAffiche).length">
+            <li class="collection-item avatar" ng-repeat="user in users | triVille:selectedVille | triDateNaissance:selectedDate | triNoteBac:selectedNote | triAge:selectedAge | triSwitch:selectedSwitch | triSearchBar:selectedSearch | triDepartement:selectedDepartement | orderBy:selectedDeroulante | limitTo: selectedQttAffiche">
+              <div class="collapsible-header">
+                <img ng-src="{{ user.photo }}" alt="Photo de {{ user.prenom }}" class="circle" />
+                <p>
+                  {{ user.prenom }}<br />
+                  {{ user.nom }}<br />
+                  {{ user.age }} ans
+                </p>
+                <i class="large material-icons swing animated infinite" ng-show="anniv(user.dob)">access_time</i>
+                <button class="btn-floating btn-large btn-option waves-effect waves-light red material-icons" type="button" name="suppression" ng-click="removeUser(user)">delete_forever</button>
+                <button class="btn-floating btn-large btn-option waves-effect waves-light pink" type="button" name="like" ng-click="likeUser(user)">
+                  <span class="material-icons" ng-if="coeurUser(user)===true">favorite</span>
+                  <span class="material-icons" ng-if="coeurUser(user)===false">favorite_border</span>
+                </button>
+                <button class="btn-floating btn-large btn-option waves-effect waves-light indigo" type="button" name="plusUn" ng-click="addPlusUn(user)">
+                  <span ng-if="possedePlusUn(user)===true">+ {{ qttPlusUn(user) }}</span>
+                  <span class="material-icons " ng-if="possedePlusUn(user)===false">add</span>
+                </button>
+                  <input-stars max="5" ng-model="YourCtrl.property"></input-stars>
+                  <div class="clear"></div>
+              </div>
+              <div class="collapsible-body">
+                <p><span class="caracteristique">Né<span ng-show="user.sexe == false">e</span> le :</span> {{ user.dob }}</p>
+                <a href="#/infoUser.html/idUser={{ user.id }}" class="waves-effect waves-light btn">...</a>
+              </div>
+            </li>
+          </ul>
+          <form class="col s12" method="post" ng-submit="addUser()">
+            <div class="row">
+              <div class="input-field col s12 m12">
+                <input name="sexe" type="radio" id="homme" ng-model="addSexe" value="true" />
+                <label for="homme">Homme</label>
+                <input name="sexe" type="radio" id="femme" ng-model="addSexe" value="false" />
+                <label for="femme">Femme</label>
+              </div>
+              <div class="input-field col s12 m6">
+                <!-- ng-trim enlève les espaces au début et à la fin -->
+                <input id="first_name" type="text" class="validate" ng-model="addPrenom" ng-trim="true" required />
+                <label for="first_name">Prénom</label>
+              </div>
+              <div class="input-field col s12 m6">
+                <input id="last_name" type="text" class="validate" ng-model="addNom" ng-trim="true" required />
+                <label for="last_name">Nom</label>
+              </div>
+              <div class="input-field col s12 m4">
+                <input id="age" type="text" class="validate" ng-model="addAge" ng-trim="true" required />
+                <label for="age">Âge</label>
+              </div>
+              <div class="input-field col s12 m4">
+                <input placeholder="" id="dob" type="date" class="validate" ng-model="addDate" required />
+              </div>
+              <div class="input-field col s12 m4">
+                <input id="note" type="number" min="0" max="20" class="validate" ng-model="addNote" ng-trim="true" required />
+                <label for="note">Note au bac</label>
+              </div>
+              <div class="input-field col s12 m8">
+                <label for="photo">Photo</label>
+                <input id="photo" type="text" class="validate" ng-model="addPhoto" ng-trim="true" required />
+              </div>
+              <div class="input-field col s12 m4">
+                <select ng-model="addLangue" required>
+                  <option value="" disabled selected>Choisir une langue</option>
+                  <option value="fr">Français</option>
+                  <option value="en">Anglais</option>
+                  <option value="it">Italien</option>
+                  <option value="es">Espagnol</option>
+                </select>
+              </div>
+              <div class="input-field col s12 m8">
+                <input name="ville" type="radio" id="lyoncity" ng-model="addVille" value="Lyon"/>
+                <label for="lyoncity">Lyon</label>
+                <input name="ville" type="radio" id="pariscity" ng-model="addVille" value="Paris"/>
+                <label for="pariscity">Paris</label>
+                <input name="ville" type="radio" id="marseillecity" ng-model="addVille" value="Marseille"/>
+                <label for="marseillecity">Marseille</label>
+              </div>
+              <div class="input-field col s12 m4">
+                <input id="dptm" type="text" class="validate" maxlength="5" ng-model="addDptm" ng-trim="true" required />
+                <label for="dptm">Département</label>
+              </div>
+              <div class="input-field col s12 m12">
+                <textarea id="biography" class="materialize-textarea" ng-model="addBiography" ng-trim="true" required></textarea>
+                <label for="biography">Biographie</label>
+              </div>
+              <button type="submit" class="waves-effect waves-light btn" name="button">Enregistrer cet utilisateur</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

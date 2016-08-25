@@ -1,0 +1,53 @@
+
+<!-- Une application peut contenir un ou plusieurs controleur. Un controleur est une zone de controle pour Angular -->
+<div ng-controller="infoCtrl">
+  <main>
+    <div class="container">
+      <div class="row">
+        <div class="col s12">
+          <div class="collapsible-header">
+            <img ng-src="{{ currentUser.photo }}" alt="Photo de {{ currentUser.prenom }}" class="circle" />
+            <p>
+              {{ currentUser.prenom }}<br />
+              {{ currentUser.nom }}<br />
+              {{ currentUser.age }} ans
+            </p>
+            <i class="large material-icons swing animated infinite" ng-show="anniv(currentUser.dob)">access_time</i>
+
+            <div class="clear"></div>
+          </div>
+
+          <p><span class="caracteristique">Né<span ng-show="currentUser.sexe == false">e</span> le :</span> {{ currentUser.dob }}</p>
+          <p><span class="caracteristique">Note au bac :</span><span ng-class="{'warning' : {{currentUser.noteBac}}<10}"> {{ currentUser.noteBac }}/20</span></p>
+          <p><span class="caracteristique">Sexe :</span><span ng-if="currentUser.sexe === true"> Homme</span><span ng-if="currentUser.sexe === false"> Femme</span></p>
+          <p>Habite à {{ currentUser.ville }} ({{ currentUser.cp }}) et parle <span ng-if="currentUser.langue == 'fr'">français</span><span ng-if="currentUser.langue == 'en'">anglais</span><span ng-if="currentUser.langue == 'es'">espagnol</span><span ng-if="currentUser.langue == 'it'">italien</span><img ng-src="{{ currentUser.langue | triLangue }}" class="imgLangue"/></p>
+          <p><span class="caracteristique">Biographie :</span><br />{{ currentUser.biographie }}</p>
+          <p>
+            <a class="waves-effect waves-light btn modal-trigger" ng-click="modalTrigger(currentUser.id)">Voir les commentaires</a>
+            <!-- Modal Structure -->
+            <div id="modal{{currentUser.id}}" class="modal">
+              <div class="modal-content">
+                <h4>
+                  Nombre de commentaire : {{currentUser.commentaire.length}}<br />
+                  Moyenne des notes : {{ moyenneCommentaires(currentUser) | number:1  }}
+                </h4>
+                <ul class="collection">
+                  <li class="collection-item avatar" ng-repeat="commentaire in currentUser.commentaire">
+                    <span class="title">{{ commentaire.date }}</span>
+                    <p>
+                      {{ commentaire.etoile }}<br />
+                      {{ commentaire.contenu }}
+                    </p>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </p>
+          <p>
+            <a href="#/home.html" class="waves-effect waves-light btn">Retour</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
